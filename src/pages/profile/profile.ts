@@ -30,7 +30,18 @@ export class ProfilePage {
           this.cliente = response;
           this.getImagePerfil();
         },
-      error => {});
+      error => {
+
+        if(error.status == 403){
+          // Houve um erro, redirecionando para HomePage
+          this.navCtrl.setRoot('HomePage');
+        }
+
+      });
+      
+    }else{
+      // Houve um erro no localStoraou localUser, redirecionando para HomePage
+      this.navCtrl.setRoot('HomePage');
     }
 
     console.log('ionViewDidLoad ProfilePage');

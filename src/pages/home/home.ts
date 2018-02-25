@@ -47,9 +47,18 @@ export class HomePage {
           this.auth.sucessfulLogin(response.headers.get('Authorization'));
           this.navCtrl.setRoot('CategoriasPage'); // Indo para categorias
       },
-    error => {});
- 
-    
+    error => {});    
+  }
+
+  // Refresh Token
+  ionViewDidEnter(){
+    this.auth.refreshToken()
+      .subscribe(response => {
+          //console.log(response.headers.get('Authorization')); // imprimindo header
+          this.auth.sucessfulLogin(response.headers.get('Authorization'));
+          this.navCtrl.setRoot('CategoriasPage'); // Indo para categorias
+      },
+    error => {}); 
   }
 
 }

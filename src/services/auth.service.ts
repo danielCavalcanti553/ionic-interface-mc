@@ -25,6 +25,17 @@ export class AuthService{ J
         );
     }
 
+    refreshToken(){ // token incluido automaticamente na requisição
+        return this.http.post(
+            `${API_CONFIG.baseUrl}/auth/refresh_token`,
+            {},
+            {
+                observe:'response', // pegar o header da resposta
+                responseType: 'text' // evitar erro parseJSON em retorno vazio  
+            }
+        );
+    }
+
     // Quando um login tem sucesso
     sucessfulLogin(authorizationValue : string){ // Recebe com argumento o token
         let tok = authorizationValue.substring(7);
