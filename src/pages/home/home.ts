@@ -61,4 +61,9 @@ export class HomePage {
     error => {}); 
   }
 
+  // navegar para página signup
+  signup(){
+    this.navCtrl.push('SignupPage');
+  }
+
 }
