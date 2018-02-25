@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // removido '/src/model'
+import { CidadeService } from '../../services/domain/cidade.service';
+import { EstadoService } from '../../services/domain/estado.service';
+import { EstadoDTO } from '../../models/estado.dto';
+import { CidadeDTO } from '../../models/cidade.dto';
 //import { FormBuilder } from '@angular/forms/src/form_builder'; Inserido no Grupo acima
 
 
@@ -11,12 +15,21 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // removido
 })
 export class SignupPage {
 
+  // contolar o formulário, fazer valiações
   formGroup : FormGroup;
 
+  // coleção de cidades e estados
+  estados: EstadoDTO[];
+  cidades: CidadeDTO[];
+
   // FormGroup: Injetar o formBuider
+  // Injetando serviços de estado e cidade
   constructor(public navCtrl: NavController, 
       public navParams: NavParams,
-      public formBuilder : FormBuilder) {
+      public formBuilder : FormBuilder,
+      public cidadeService:CidadeService,
+      public estadoService: EstadoService
+    ) {
 
         this.formGroup = this.formBuilder.group({
           // Parâmetros: valor inicial, lista de validators (repetir do backend)
@@ -42,7 +55,27 @@ export class SignupPage {
     console.log("Enviando Form...");
   }
 
-  // contolar o formulário, fazer valiações
+  // Ao carregar a página
+  ionViewDidLoad(){
+    this.estadoService.findAll()
+      .subscribe(response => {
+        this.estados = response;
+        this.formGroup.controls.estadoId.setValue(this.estados[0].id);
+        this.updateCidades();
+      },
+    error => {
+      // Erro ainda não tratado
+    })
+  }
 
+  // atualizando o campo Cidades
+  updateCidades(){
+    let estado_id = this.formGroup.value.estadoId;
+    this.cidadeService.findAll(estado_id)
+    .subscribe(response => {
+      this.cidades = response;
+      this.formGroup.controls.cidadeId.setValue(null); // Tira seleção da caixa de cidades
+  })
+}
 
 }
