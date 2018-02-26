@@ -16,7 +16,7 @@
     <button ion-item *ngFor="let item of items">
 
       <ion-thumbnail item-start>
-        <img src="{{bucketUrl}}/cat{{item.id}}.jpg" (click)="showProdutos()">
+        <img src="{{bucketUrl}}/cat{{item.id}}.jpg" (click)="showProdutos(item.id)">
       </ion-thumbnail>
       <!-- {{}} : Interpolação > HTML com o dado de categorias.ts (item) -->
       <h2>{{item.nome}}</h2>
