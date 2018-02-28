@@ -13,6 +13,11 @@ export class ClienteService{
     constructor(public http:HttpClient, public storage: StorageService){
     }
 
+    // Em pedido, certificar que o id é realmente o que foi selecionado no pedido
+    findById(id:string){
+      return this.http.get(`${API_CONFIG.baseUrl}/clientes/${id}`);
+    }
+
     findByEmail(email:string){
 
       return this.http.get(`${API_CONFIG.baseUrl}/clientes/email?value=${email}`);
