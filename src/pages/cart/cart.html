@@ -36,11 +36,10 @@
   <!-- Mostrando mensagem se não houver itens -->
   <ion-item *ngIf="total()<=0">
       <h1>Não há itens no carrinho</h1>
-      
     </ion-item>
-
   </ion-list>
 
   <button ion-button block (click)="continue()">Continuar Comprando</button>
+  <button ion-button block (click)="checkout()" color="secundary">Finalizar Pedido</button>
 
 </ion-content>

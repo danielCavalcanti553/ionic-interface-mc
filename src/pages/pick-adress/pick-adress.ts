@@ -1,24 +1,24 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { EnderecoDTO } from '../../models/endereco.dto';
 import { StorageService } from '../../services/storage.service';
-import { ClienteDTO } from '../../models/cliente.dto';
 import { ClienteService } from '../../services/domain/cliente.service';
-import { API_CONFIG } from '../../config/api.config';
+
 
 @IonicPage()
 @Component({
-  selector: 'page-profile',
-  templateUrl: 'profile.html',
+  selector: 'page-pick-adress',
+  templateUrl: 'pick-adress.html',
 })
-export class ProfilePage {
+export class PickAdressPage {
 
-  cliente : ClienteDTO;
-  
+  items : EnderecoDTO[];
+
   constructor(
     public navCtrl: NavController, 
-    public navParams: NavParams,
-    public storage : StorageService, // injetando Local store
-    public clienteService : ClienteService) { // Injetando cliente Service
+    public navParams: NavParams, 
+    public storage : StorageService,
+    public clienteService : ClienteService) {
   }
 
   ionViewDidLoad() {
@@ -27,8 +27,7 @@ export class ProfilePage {
       this.clienteService.findByEmail(localUser.email)
         .subscribe(response => {
           // resposta com sucesso
-          this.cliente = response as ClienteDTO; // Cast parar Cliente DTO
-          this.getImagePerfil();
+          this.items = response['enderecos']; // Evitando erro do compilador se não houver
         },
       error => {
 
@@ -43,16 +42,6 @@ export class ProfilePage {
       // Houve um erro no localStoraou localUser, redirecionando para HomePage
       this.navCtrl.setRoot('HomePage');
     }
-
-    console.log('ionViewDidLoad ProfilePage');
   }
-
-  getImagePerfil(){
-    this.clienteService.getImageFromS3(this.cliente.id)
-      .subscribe(response => {
-        this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
-      },
-      error => {});
-    }
 
 }
