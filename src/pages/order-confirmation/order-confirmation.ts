@@ -19,15 +19,17 @@ export class OrderConfirmationPage {
   cartItems: CartItem[];
   cliente: ClienteDTO;
   endereco: EnderecoDTO;
+  codpedido: string;
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public clienteService: ClienteService,
     public cartService: CartService,
-    public pedidoService : PedidoService) {
+    public pedidoService: PedidoService) {
 
     this.pedido = this.navParams.get('pedido');
+   
   }
 
   ionViewDidLoad() {
@@ -36,13 +38,15 @@ export class OrderConfirmationPage {
     this.clienteService.findById(this.pedido.cliente.id)
       .subscribe(response => {
         this.cliente = response as ClienteDTO;
-        this.endereco = this.findEndereco(this.pedido.enderecoDeEntrega.id, response['enderecos']);
+        
+        this.endereco = this.findEndereco(this.pedido.endereco.id, response['enderecos']);
+       
       },
       error => {
         this.navCtrl.setRoot('HomePage');
       });
   }
-
+  
   private findEndereco(id: string, list: EnderecoDTO[]) : EnderecoDTO {
     let position = list.findIndex(x => x.id == id);
     return list[position];
@@ -50,23 +54,33 @@ export class OrderConfirmationPage {
 
   total() : number {
     return this.cartService.total();
+  } 
+
+  back() {
+    this.navCtrl.setRoot('CartPage');
   }
 
-  checkout(){
+  home() {
+    this.navCtrl.setRoot('CategoriasPage');
+  }
+
+  checkout() {
+    
     this.pedidoService.insert(this.pedido)
+    
       .subscribe(response => {
         this.cartService.createOrClearCart();
-        console.log(response.headers.get('location'));
+        this.codpedido = this.extractId(response.headers.get('location'));
       },
-    error => {
-
-      if(error.status == 403){
-        this.navCtrl.setRoot('HomePage');
-      }
-      
-    });
+      error => {
+        if (error.status == 403) {
+          this.navCtrl.setRoot('HomePage');
+        }
+      });
   }
-  back(){
-    this.navCtrl.setRoot('CartPage');
+
+  private extractId(location : string) : string {
+    let position = location.lastIndexOf('/');
+    return location.substring(position + 1, location.length);
   }
 }
