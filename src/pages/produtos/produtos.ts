@@ -25,7 +25,10 @@ export class ProdutosPage {
   }
 
   ionViewDidLoad() {
+    this.loadProduct();
+  };
 
+  loadProduct(){
     let categoria_id = this.navParams.get('categoria_id');
 
     let loader = this.presentLoadingDefault();
@@ -41,7 +44,7 @@ export class ProdutosPage {
         loader.dismiss();
       }
       );
-  };
+  }
 
   loadImageUrls() {
     // Carregando imagens para todos os produtos em items
@@ -70,4 +73,12 @@ export class ProdutosPage {
     return loading;
   
   }
+
+  doRefresh(refresher) {
+    this.loadProduct();
+     setTimeout(() => {
+       refresher.complete();
+    }, 1000); // milisegundos
+  }
+
 }
