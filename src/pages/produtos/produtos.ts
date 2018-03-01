@@ -13,7 +13,13 @@ import { LoadingController } from 'ionic-angular/components/loading/loading-cont
 })
 export class ProdutosPage {
 
-  items: ProdutoDTO[];
+  lines : number = 15;
+
+  page : number = 0;
+  
+  // Lista inicia vazia -> Infinity scroll concatena listas
+  items: ProdutoDTO[] = [];
+
   // NavParam -> Obtenho dados da navegação
   // Injetando ProdutoService
   // injetando Loading (Carregamento da página)
@@ -30,32 +36,31 @@ export class ProdutosPage {
 
   loadProduct(){
     let categoria_id = this.navParams.get('categoria_id');
-
     let loader = this.presentLoadingDefault();
-
-    this.produtoService.findByCategoria(categoria_id)
+    this.produtoService.findByCategoria(categoria_id, this.page, this.lines)
       .subscribe(response => {
-        this.items = response['content'];
+        let start = this.items.length;
+        this.items = this.items.concat(response['content']);
+        let end = this.items.length - 1;
         loader.dismiss();
-        this.loadImageUrls();
-        
+        console.log(this.page);
+        console.log(this.items);
+        this.loadImageUrls(start, end);
       },
-      error => { 
+      error => {
         loader.dismiss();
-      }
-      );
+      });
   }
 
-  loadImageUrls() {
+  loadImageUrls(start : number, end: number) {
     // Carregando imagens para todos os produtos em items
-    for (var i = 0; i < this.items.length; i++) {
+   for (var i=start; i<=end; i++) {
       let item = this.items[i];
       this.produtoService.getSmallImageFromBucket(item.id)
         .subscribe(response => {
           item.imageUrl = `${API_CONFIG.bucketBaseUrl}/prod${item.id}-small.jpg`;
         },
-        error => { }
-        )
+        error => {});
     }
   }
 
@@ -75,10 +80,24 @@ export class ProdutosPage {
   }
 
   doRefresh(refresher) {
+    this.page = 0;
+    this.items = [];
+    this.loadProduct();
     this.loadProduct();
      setTimeout(() => {
        refresher.complete();
     }, 1000); // milisegundos
+  }
+
+  // Infinity scroll para produtos
+  doInfinite(infiniteScroll) {
+
+    this.page++;
+    this.loadProduct();
+    setTimeout(() => {
+      infiniteScroll.complete();
+    }, 1000);
+
   }
 
 }
