@@ -4,13 +4,17 @@ import { ClienteDTO } from "../../models/cliente.dto";
 import { Observable } from "rxjs/Rx";
 import { API_CONFIG } from "../../config/api.config";
 import { StorageService } from "../storage.service";
+import { ImageUtilService } from "../image-util.service";
 
 
 @Injectable()
 export class ClienteService{
 
     // injetando HTTPCliente e Storage Service
-    constructor(public http:HttpClient, public storage: StorageService){
+    constructor(
+      public http:HttpClient, 
+      public storage: StorageService,
+      public imageUtil : ImageUtilService){
     }
 
     // Em pedido, certificar que o id é realmente o que foi selecionado no pedido
@@ -38,5 +42,22 @@ export class ClienteService{
         }
       );
     }
+
+    // Enviar imagem para o backend
+    uploadPicture(picture){
+      let pictureBlob = this.imageUtil.dataUriToBlob(picture); // converter imagem para blob
+      let formData : FormData = new FormData();
+      formData.set('file',pictureBlob, 'file.png');
+
+      return this.http.post(
+        `${API_CONFIG.baseUrl}/clientes/picture`,
+        formData,
+        {
+          observe: 'response',
+          responseType: 'text'
+        }
+      );
+    }
+
 
 }
